@@ -5,6 +5,7 @@ import FacebookIcon from "./auth/fb.svg";
 import GithubIcon from "./auth/github.svg";
 import GoogleIcon from "./auth/google.svg";
 import LockIcon from "./auth/lock.svg";
+import UserIcon from "./auth/user.svg";
 
 const authIcons = {
   EmailIcon,
@@ -14,6 +15,7 @@ const authIcons = {
   GoogleIcon,
   FacebookIcon,
   GithubIcon,
+  UserIcon,
 };
 
 export { authIcons };

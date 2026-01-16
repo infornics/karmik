@@ -35,6 +35,7 @@ export default function Login() {
         <View className="flex-row items-center gap-2 shadow-md bg-white py-3 px-5 rounded-full">
           <EmailIcon width={28} height={28} />
           <TextInput
+            keyboardType="email-address"
             placeholder="Email"
             className="text-gray-500 flex-1 text-xl"
           />
@@ -65,9 +66,7 @@ export default function Login() {
         </TouchableOpacity>
 
         <View className="flex-row items-center gap-2 justify-center">
-          <Text className="text-gray-500">
-            Don&apos;t have an account?
-          </Text>
+          <Text className="text-gray-500">Don&apos;t have an account?</Text>
           <Link href="/register" className="text-lg underline text-cyan-500">
             Register
           </Link>
