@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Animated,
   Modal,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -30,6 +31,7 @@ export default function HomeScreen() {
   const scoreScale = useRef(new Animated.Value(1)).current;
   const [resetting, setResetting] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const todayLabel = useMemo(
     () =>
@@ -95,6 +97,16 @@ export default function HomeScreen() {
       setError(e.message ?? "Failed to reset karma");
     } finally {
       setResetting(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    if (!token) return;
+    try {
+      setRefreshing(true);
+      await loadData();
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -221,6 +233,14 @@ export default function HomeScreen() {
           <ScrollView
             className="flex-1"
             contentContainerStyle={{ paddingBottom: 24 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#6b7280"
+                colors={["#22c55e"]}
+              />
+            }
           >
             {history.length === 0 ? (
               <Text className="text-gray-500 text-center mt-4">

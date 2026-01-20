@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { fetchKarmaHistory } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
@@ -15,24 +21,35 @@ export default function HistoryScreen() {
   const [history, setHistory] = useState<KarmaHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fetchKarmaHistory(token);
+      setHistory(data.history);
+    } catch (e: any) {
+      setError(e.message ?? "Failed to load history");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const load = async () => {
-      if (!token) return;
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetchKarmaHistory(token);
-        setHistory(data.history);
-      } catch (e: any) {
-        setError(e.message ?? "Failed to load history");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     void load();
   }, [token]);
+
+  const handleRefresh = async () => {
+    if (!token) return;
+    try {
+      setRefreshing(true);
+      await load();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-[#F3F4FA] px-6 pt-14 pb-6">
@@ -55,6 +72,14 @@ export default function HistoryScreen() {
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ paddingBottom: 24 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#6b7280"
+              colors={["#22c55e"]}
+            />
+          }
         >
           {history.length === 0 ? (
             <Text className="text-gray-500 text-center mt-4">
