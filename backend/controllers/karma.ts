@@ -4,6 +4,7 @@ import {
   addKarmaEntry,
   getKarmaHistoryForUser,
   getTodaySummaryForUser,
+  resetTodayForUser,
 } from "../services/karma";
 
 export const addKarma = async (req: AuthRequest, res: Response) => {
@@ -52,3 +53,18 @@ export const getKarmaHistory = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const resetTodayKarma = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    await resetTodayForUser(userId);
+
+    return res.status(200).json({ message: "Today's karma reset" });
+  } catch (error: any) {
+    console.error("Error in resetTodayKarma controller:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

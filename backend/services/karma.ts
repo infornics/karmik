@@ -59,3 +59,14 @@ export const getTodaySummaryForUser = async (
   return { good, bad, points };
 };
 
+export const resetTodayForUser = async (userId: string): Promise<void> => {
+  const db = await connectDB();
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  await db
+    .delete(karmaEntries)
+    .where(
+      and(eq(karmaEntries.userId, userId), gt(karmaEntries.createdAt, startOfDay))
+    );
+};

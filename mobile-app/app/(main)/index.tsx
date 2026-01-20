@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { addKarmaEntry, fetchKarmaHistory } from "@/lib/api";
+import { addKarmaEntry, fetchKarmaHistory, resetTodayKarma } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 type KarmaHistoryItem = {
@@ -27,6 +27,7 @@ export default function HomeScreen() {
   const [updating, setUpdating] = useState<"good" | "bad" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const scoreScale = useRef(new Animated.Value(1)).current;
+  const [resetting, setResetting] = useState(false);
 
   const todayLabel = useMemo(
     () =>
@@ -71,6 +72,20 @@ export default function HomeScreen() {
       setError(e.message ?? "Failed to update karma");
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const handleResetToday = async () => {
+    if (!token) return;
+    try {
+      setResetting(true);
+      setError(null);
+      await resetTodayKarma(token);
+      await loadData();
+    } catch (e: any) {
+      setError(e.message ?? "Failed to reset karma");
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -171,7 +186,20 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text className="text-gray-700 font-semibold mb-2">
+        <View className="flex-row items-center justify-between mb-2">
+          <Text className="text-gray-700 font-semibold">Recent karma</Text>
+          <TouchableOpacity
+            onPress={handleResetToday}
+            disabled={resetting || loading}
+          >
+            <Text className="text-xs text-gray-500 underline">
+              {resetting ? "Resetting..." : "Reset today"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* History list */}
+        <Text className="hidden">
           Recent karma
         </Text>
 

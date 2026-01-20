@@ -136,3 +136,29 @@ export async function fetchKarmaHistory(token: string) {
     throw new Error("Unable to fetch karma history");
   }
 }
+
+export async function resetTodayKarma(token: string) {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  try {
+    const response = await api.delete("/auth/karma/today", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      const message =
+        (error.response?.data as any)?.message ??
+        error.message ??
+        "Unable to reset karma";
+      throw new Error(message);
+    }
+
+    throw new Error("Unable to reset karma");
+  }
+}
