@@ -26,6 +26,16 @@ export const findUserByUsername = async (
   return result[0];
 };
 
+export const findUserById = async (id: string): Promise<User | undefined> => {
+  const db = await connectDB();
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  return result[0];
+};
+
 export const createUser = async (data: NewUser): Promise<User> => {
   const db = await connectDB();
   const [user] = await db.insert(users).values(data).returning();

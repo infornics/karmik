@@ -10,7 +10,7 @@ import {
 import { authIcons } from "@/assets/icons";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { loginUser } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 export default function Login() {
   const {
@@ -23,6 +23,7 @@ export default function Login() {
     GithubIcon,
   } = authIcons;
 
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +39,7 @@ export default function Login() {
     try {
       setLoading(true);
       setError(null);
-      await loginUser({ email, password });
+      await login(email, password);
       router.replace("/");
     } catch (e: any) {
       setError(e.message ?? "Login failed");
