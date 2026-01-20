@@ -135,7 +135,7 @@ export default function HomeScreen() {
             style={{
               transform: [{ scale: scoreScale }],
             }}
-            className={`text-5xl font-extrabold ${
+            className={`text-9xl font-extrabold ${
               todayPoints >= 0 ? "text-cyan-500" : "text-rose-500"
             }`}
           >
@@ -166,9 +166,9 @@ export default function HomeScreen() {
           <Text className="text-rose-500 text-center mb-2">{error}</Text>
         ) : null}
 
-        <View className="flex-row gap-3 mb-6">
+        <View className="gap-3 mb-6">
           <TouchableOpacity
-            className="flex-1 bg-cyan-500 rounded-full py-4 px-4 flex-row justify-center items-center shadow-sm"
+            className="bg-cyan-500 rounded-full p-5 flex-row justify-center items-center shadow-sm"
             onPress={() => handleAdd("good")}
             disabled={updating !== null}
           >
@@ -182,7 +182,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-1 bg-rose-500 rounded-full py-4 px-4 flex-row justify-center items-center shadow-sm"
+            className="bg-rose-500 rounded-full p-5 flex-row justify-center items-center shadow-sm"
             onPress={() => handleAdd("bad")}
             disabled={updating !== null}
           >
