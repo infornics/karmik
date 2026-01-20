@@ -128,7 +128,7 @@ export default function HomeScreen() {
               transform: [{ scale: scoreScale }],
             }}
             className={`text-5xl font-extrabold ${
-              todayPoints >= 0 ? "text-emerald-500" : "text-rose-500"
+              todayPoints >= 0 ? "text-cyan-500" : "text-rose-500"
             }`}
           >
             {todayPoints}
@@ -139,7 +139,7 @@ export default function HomeScreen() {
               <Text className="text-xs text-gray-400 uppercase tracking-wide">
                 Good
               </Text>
-              <Text className="text-2xl font-bold text-emerald-500 mt-1">
+              <Text className="text-2xl font-bold text-cyan-500 mt-1">
                 +{todayGood}
               </Text>
             </View>
@@ -160,7 +160,7 @@ export default function HomeScreen() {
 
         <View className="flex-row gap-3 mb-6">
           <TouchableOpacity
-            className="flex-1 bg-emerald-500 rounded-full py-4 px-4 flex-row justify-center items-center shadow-sm"
+            className="flex-1 bg-cyan-500 rounded-full py-4 px-4 flex-row justify-center items-center shadow-sm"
             onPress={() => handleAdd("good")}
             disabled={updating !== null}
           >
@@ -234,7 +234,7 @@ export default function HomeScreen() {
                     <View>
                       <Text
                         className={`font-semibold ${
-                          isGood ? "text-emerald-600" : "text-rose-600"
+                          isGood ? "text-cyan-600" : "text-rose-600"
                         }`}
                       >
                         {isGood ? "Good deed" : "Slip up"}
@@ -245,7 +245,7 @@ export default function HomeScreen() {
                     </View>
                     <Text
                       className={`text-xl font-bold ${
-                        isGood ? "text-emerald-500" : "text-rose-500"
+                        isGood ? "text-cyan-500" : "text-rose-500"
                       }`}
                     >
                       {item.points > 0 ? `+${item.points}` : item.points}

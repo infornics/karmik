@@ -82,7 +82,7 @@ export default function HistoryScreen() {
                   <View>
                     <Text
                       className={`font-semibold ${
-                        isGood ? "text-emerald-600" : "text-rose-600"
+                        isGood ? "text-cyan-600" : "text-rose-600"
                       }`}
                     >
                       {isGood ? "Good deed" : "Slip up"}
@@ -93,7 +93,7 @@ export default function HistoryScreen() {
                   </View>
                   <Text
                     className={`text-xl font-bold ${
-                      isGood ? "text-emerald-500" : "text-rose-500"
+                      isGood ? "text-cyan-500" : "text-rose-500"
                     }`}
                   >
                     {item.points > 0 ? `+${item.points}` : item.points}
