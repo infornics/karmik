@@ -19,7 +19,7 @@ type KarmaHistoryItem = {
 };
 
 export default function HomeScreen() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [todayGood, setTodayGood] = useState(0);
   const [todayBad, setTodayBad] = useState(0);
   const [todayPoints, setTodayPoints] = useState(0);
@@ -40,6 +40,13 @@ export default function HomeScreen() {
       }),
     []
   );
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
 
   const loadData = async () => {
     if (!token) return;
@@ -110,10 +117,11 @@ export default function HomeScreen() {
     <View className="flex-1 bg-[#F3F4FA]">
       <View className="px-6 pt-14 pb-4">
         <Text className="text-xs text-gray-500 uppercase tracking-wide">
-          Today
+          {todayLabel}
         </Text>
         <Text className="text-3xl font-extrabold text-gray-900 mt-1">
-          {todayLabel}
+          {greeting}
+          {user?.name ? `, ${user.name.split(" ")[0]}` : ""}
         </Text>
         <Text className="text-gray-500 mt-1">
           Track the little choices that shape your day.

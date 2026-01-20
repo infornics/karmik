@@ -162,3 +162,39 @@ export async function resetTodayKarma(token: string) {
     throw new Error("Unable to reset karma");
   }
 }
+
+export async function fetchCurrentUser(token: string) {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  try {
+    const response = await api.get("/auth/user", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data as {
+      user: {
+        id: string;
+        email: string;
+        name?: string | null;
+        username?: string | null;
+      };
+    };
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      const status = error.response?.status;
+      const message =
+        (error.response?.data as any)?.message ??
+        error.message ??
+        "Unable to fetch user";
+      const err = new Error(message) as Error & { status?: number };
+      err.status = status;
+      throw err;
+    }
+
+    throw new Error("Unable to fetch user");
+  }
+}

@@ -84,8 +84,6 @@ export const login = async (req: Request, res: Response) => {
 
         const token = signToken({ sub: user.id, email: user.email });
 
-        const { password: _pw } = user;
-
         return res.status(200).json({
             message: "Login successful",
             token,

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
-import { loginUser } from "./api";
+import { fetchCurrentUser, loginUser } from "./api";
 import { isAxiosError } from "axios";
 
 type User = {
@@ -39,8 +39,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
 
-        // TODO: Optionally call /auth/me to validate token and fetch user.
         setToken(storedToken);
+
+        try {
+          const data = await fetchCurrentUser(storedToken);
+          setUser(data.user);
+        } catch (error: any) {
+          if (error?.status === 401) {
+            await AsyncStorage.removeItem(TOKEN_KEY);
+            setToken(null);
+            setUser(null);
+          }
+        }
       } finally {
         setLoading(false);
       }
@@ -58,7 +68,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string) => {
     try {
       const data = await loginUser({ email, password });
-      await setSession(data.token, data.user);
+      const token = data.token as string;
+
+      const me = await fetchCurrentUser(token);
+      await setSession(token, me.user);
     } catch (error) {
       if (isAxiosError(error)) {
         throw error;
