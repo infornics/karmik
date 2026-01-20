@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
+  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -28,6 +29,7 @@ export default function HomeScreen() {
   const [error, setError] = useState<string | null>(null);
   const scoreScale = useRef(new Animated.Value(1)).current;
   const [resetting, setResetting] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const todayLabel = useMemo(
     () =>
@@ -189,7 +191,7 @@ export default function HomeScreen() {
         <View className="flex-row items-center justify-between mb-2">
           <Text className="text-gray-700 font-semibold">Recent karma</Text>
           <TouchableOpacity
-            onPress={handleResetToday}
+            onPress={() => setShowResetConfirm(true)}
             disabled={resetting || loading}
           >
             <Text className="text-xs text-gray-500 underline">
@@ -255,6 +257,48 @@ export default function HomeScreen() {
           </ScrollView>
         )}
       </View>
+
+      <Modal
+        visible={showResetConfirm}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowResetConfirm(false)}
+      >
+        <View className="flex-1 bg-black/40 items-center justify-center px-6">
+          <View className="bg-white rounded-3xl p-6 w-full max-w-md">
+            <Text className="text-lg font-semibold text-gray-900 mb-2">
+              Reset today&apos;s karma?
+            </Text>
+            <Text className="text-gray-600 mb-4">
+              This will remove all entries logged for today and set your score
+              back to 0. This action cannot be undone.
+            </Text>
+
+            <View className="flex-row justify-end gap-3 mt-2">
+              <TouchableOpacity
+                onPress={() => setShowResetConfirm(false)}
+                disabled={resetting}
+              >
+                <Text className="text-gray-500 font-medium">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="bg-rose-500 rounded-full px-4 py-2 flex-row items-center justify-center"
+                onPress={async () => {
+                  setShowResetConfirm(false);
+                  await handleResetToday();
+                }}
+                disabled={resetting}
+              >
+                {resetting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-semibold">Yes, reset</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
