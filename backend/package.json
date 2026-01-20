@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node build/index.js",
-    "build": "npm i && tsc",
+    "build": "npm i && npm run db:generate && tsc",
     "db:migrate": "drizzle-kit migrate",
     "db:generate": "drizzle-kit generate"
   },
