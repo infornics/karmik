@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 
 // Expo only exposes env vars prefixed with EXPO_PUBLIC_ to the JS bundle.
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
@@ -36,7 +36,7 @@ export async function registerUser(payload: {
 
     return response.data;
   } catch (error: any) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       const message =
         (error.response?.data as any)?.message ??
         error.message ??
