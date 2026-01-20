@@ -201,22 +201,18 @@ export async function fetchCurrentUser(token: string) {
 
 export async function updateUserProfile(
   token: string,
-  payload: { name: string }
+  payload: { name?: string; username?: string }
 ) {
   if (!API_BASE_URL) {
     throw new Error("API base URL is not configured");
   }
 
   try {
-    const response = await api.put(
-      "/user",
-      { name: payload.name },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await api.put("/user", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return response.data as {
       user: {

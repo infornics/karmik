@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../middleware/auth";
-import { findUserById, findUserByUsername, updateUserById } from "../services/user";
+import {
+  findUserById,
+  findUserByUsername,
+  updateUserById,
+} from "../services/user";
 
 const generateUsernameFromName = async (name: string): Promise<string> => {
   const base = name
@@ -50,18 +54,44 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { name } = req.body as { name?: string };
+    const { name, username } = req.body as { name?: string; username?: string };
 
-    if (!name || !name.trim()) {
-      return res.status(400).json({ message: "Name is required" });
+    if (!name && !username) {
+      return res
+        .status(400)
+        .json({ message: "At least one of name or username is required" });
     }
 
-    const username = await generateUsernameFromName(name);
+    const updateData: { name?: string; username?: string } = {};
 
-    const updated = await updateUserById(req.userId, {
-      name: name.trim(),
-      username,
-    });
+    if (name && name.trim()) {
+      updateData.name = name.trim();
+    }
+
+    if (username && username.trim()) {
+      const trimmedUsername = username
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9_]+/g, "");
+
+      if (!trimmedUsername) {
+        return res.status(400).json({ message: "Invalid username" });
+      }
+
+      const existing = await findUserByUsername(trimmedUsername);
+      if (existing && existing.id !== req.userId) {
+        return res
+          .status(409)
+          .json({ message: "Username is already taken" });
+      }
+
+      updateData.username = trimmedUsername;
+    } else if (name && name.trim()) {
+      // No username provided: (re)generate from name
+      updateData.username = await generateUsernameFromName(name);
+    }
+
+    const updated = await updateUserById(req.userId, updateData);
 
     const { password: _pw, ...safeUser } = updated;
 

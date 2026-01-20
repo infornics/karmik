@@ -61,6 +61,12 @@ export default function MainLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="profile-edit"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

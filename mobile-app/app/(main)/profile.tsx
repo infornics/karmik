@@ -1,41 +1,9 @@
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/lib/auth";
-import { updateUserProfile } from "@/lib/api";
+import { router } from "expo-router";
 
 export default function ProfileScreen() {
-  const { user, token, logout, setSession } = useAuth();
-  const [name, setName] = useState(user?.name ?? "");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  const handleSave = async () => {
-    if (!token) return;
-    if (!name.trim()) {
-      setError("Name cannot be empty");
-      return;
-    }
-
-    try {
-      setSaving(true);
-      setError(null);
-      setSuccess(null);
-      const data = await updateUserProfile(token, { name: name.trim() });
-      await setSession(token, data.user);
-      setSuccess("Profile updated");
-    } catch (e: any) {
-      setError(e.message ?? "Failed to update profile");
-    } finally {
-      setSaving(false);
-    }
-  };
+  const { user, logout } = useAuth();
 
   return (
     <View className="flex-1 bg-[#F3F4FA] px-6 pt-14 pb-6">
@@ -49,12 +17,9 @@ export default function ProfileScreen() {
       <View className="bg-white rounded-3xl p-6 shadow-md mb-4 gap-4">
         <View>
           <Text className="text-sm text-gray-500 mb-1">Name</Text>
-          <TextInput
-            value={name}
-            onChangeText={setName}
-            placeholder="Your name"
-            className="border border-gray-200 rounded-2xl px-4 py-3 text-gray-900"
-          />
+          <Text className="text-gray-900 font-semibold">
+            {user?.name || "Karmik user"}
+          </Text>
         </View>
 
         <View>
@@ -67,27 +32,15 @@ export default function ProfileScreen() {
         <View>
           <Text className="text-sm text-gray-500 mb-1">Username</Text>
           <Text className="text-gray-900 font-medium">
-            {user?.username ?? "Will be generated from your name"}
+            {user?.username ?? "Not set yet"}
           </Text>
         </View>
 
-        {error ? (
-          <Text className="text-rose-500 text-sm mt-1">{error}</Text>
-        ) : null}
-        {success ? (
-          <Text className="text-emerald-500 text-sm mt-1">{success}</Text>
-        ) : null}
-
         <TouchableOpacity
-          className="mt-2 bg-cyan-500 rounded-full py-3 px-4 items-center flex-row justify-center"
-          onPress={handleSave}
-          disabled={saving}
+          className="mt-2 bg-cyan-500 rounded-full py-3 px-4 items-center"
+          onPress={() => router.push("/profile-edit")}
         >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-white text-lg font-semibold">Save</Text>
-          )}
+          <Text className="text-white text-lg font-semibold">Edit profile</Text>
         </TouchableOpacity>
       </View>
 
