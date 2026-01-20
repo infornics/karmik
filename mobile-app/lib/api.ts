@@ -169,7 +169,7 @@ export async function fetchCurrentUser(token: string) {
   }
 
   try {
-    const response = await api.get("/auth/user", {
+    const response = await api.get("/user", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -196,5 +196,45 @@ export async function fetchCurrentUser(token: string) {
     }
 
     throw new Error("Unable to fetch user");
+  }
+}
+
+export async function updateUserProfile(
+  token: string,
+  payload: { name: string }
+) {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  try {
+    const response = await api.put(
+      "/user",
+      { name: payload.name },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data as {
+      user: {
+        id: string;
+        email: string;
+        name?: string | null;
+        username?: string | null;
+      };
+    };
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      const message =
+        (error.response?.data as any)?.message ??
+        error.message ??
+        "Unable to update profile";
+      throw new Error(message);
+    }
+
+    throw new Error("Unable to update profile");
   }
 }

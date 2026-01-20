@@ -42,3 +42,15 @@ export const createUser = async (data: NewUser): Promise<User> => {
   return user;
 };
 
+export const updateUserById = async (
+  id: string,
+  data: Partial<Pick<User, "name" | "username">>
+): Promise<User> => {
+  const db = await connectDB();
+  const [user] = await db
+    .update(users)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(users.id, id))
+    .returning();
+  return user;
+};
