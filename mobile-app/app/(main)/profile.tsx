@@ -45,7 +45,7 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity
-        className="mt-auto bg-gray-900 rounded-full py-4 px-4 items-center"
+        className="mt-auto bg-rose-500 rounded-full py-4 px-4 items-center"
         onPress={logout}
       >
         <Text className="text-white text-lg font-semibold">Log out</Text>
