@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Pressable,
   Text,
   TextInput,
@@ -7,8 +8,9 @@ import {
 } from "react-native";
 
 import { authIcons } from "@/assets/icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
+import { loginUser } from "@/lib/api";
 
 export default function Login() {
   const {
@@ -20,7 +22,31 @@ export default function Login() {
     FacebookIcon,
     GithubIcon,
   } = authIcons;
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      await loginUser({ email, password });
+      router.replace("/");
+    } catch (e: any) {
+      setError(e.message ?? "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View className="items-center justify-center flex-1">
       <View className="items-center justify-center gap-1">
@@ -38,6 +64,9 @@ export default function Login() {
             keyboardType="email-address"
             placeholder="Email"
             className="text-gray-500 flex-1 text-xl"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
           />
         </View>
 
@@ -47,6 +76,8 @@ export default function Login() {
             placeholder="Password"
             secureTextEntry={!showPassword}
             className="text-gray-500 flex-1 text-xl"
+            value={password}
+            onChangeText={setPassword}
           />
           <Pressable onPress={() => setShowPassword(!showPassword)}>
             {showPassword ? (
@@ -61,8 +92,20 @@ export default function Login() {
           Forgot Password?
         </Link>
 
-        <TouchableOpacity className="bg-cyan-500 p-5 rounded-full">
-          <Text className="text-white text-center text-2xl">Login</Text>
+        {error ? (
+          <Text className="text-red-500 text-center">{error}</Text>
+        ) : null}
+
+        <TouchableOpacity
+          className="bg-cyan-500 p-5 rounded-full flex-row items-center justify-center"
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-white text-center text-2xl">Login</Text>
+          )}
         </TouchableOpacity>
 
         <View className="flex-row items-center gap-2 justify-center">

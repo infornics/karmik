@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { createUser, findUserByEmail, findUserByUsername } from "../services/user";
+import {
+  createUser,
+  findUserByEmail,
+  findUserByUsername,
+} from "../services/user";
 import { NewUser } from "../database/schemas/user";
 
 export const register = async (req: Request, res: Response) => {
@@ -50,3 +54,42 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body as { email?: string; password?: string };
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // In future we can return JWT here; for now, basic success + user.
+    const { password: _pw, ...safeUser } = user;
+
+    return res.status(200).json({
+      message: "Login successful",
+      user: safeUser,
+    });
+  } catch (error: any) {
+    console.error("Error in login controller:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};

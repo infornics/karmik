@@ -48,3 +48,27 @@ export async function registerUser(payload: {
   }
 }
 
+export async function loginUser(payload: { email: string; password: string }) {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  try {
+    const response = await api.post("/auth/login", {
+      email: payload.email,
+      password: payload.password,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      const message =
+        (error.response?.data as any)?.message ??
+        error.message ??
+        "Login failed";
+      throw new Error(message);
+    }
+
+    throw new Error("Login failed");
+  }
+}
