@@ -50,7 +50,7 @@ const startServer = async () => {
   const attemptListen = () => {
     return new Promise<void>((resolve, reject) => {
       const server = app
-        .listen(currentPort)
+        .listen(currentPort, "0.0.0.0")
         .on("error", (err: NodeJS.ErrnoException) => {
           if (err.code === "EADDRINUSE" && retryCount < maxRetries) {
             retryCount++;

@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Pressable,
   Text,
   TextInput,
@@ -7,8 +8,9 @@ import {
 } from "react-native";
 
 import { authIcons } from "@/assets/icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
+import { registerUser } from "@/lib/api";
 
 export default function Register() {
   const {
@@ -21,7 +23,32 @@ export default function Register() {
     GithubIcon,
     UserIcon,
   } = authIcons;
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleRegister = async () => {
+    if (!email || !password || !name) {
+      setError("Name, email, and password are required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      await registerUser({ name, email, password });
+      router.replace("/login");
+    } catch (e: any) {
+      setError(e.message ?? "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View className="items-center justify-center flex-1">
       <View className="items-center justify-center gap-1">
@@ -39,6 +66,8 @@ export default function Register() {
           <TextInput
             placeholder="Full Name"
             className="text-gray-500 flex-1 text-xl"
+            value={name}
+            onChangeText={setName}
           />
         </View>
         <View className="flex-row items-center gap-2 shadow-md bg-white py-3 px-5 rounded-full">
@@ -47,6 +76,9 @@ export default function Register() {
             keyboardType="email-address"
             placeholder="Email"
             className="text-gray-500 flex-1 text-xl"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
           />
         </View>
 
@@ -56,6 +88,8 @@ export default function Register() {
             placeholder="Password"
             secureTextEntry={!showPassword}
             className="text-gray-500 flex-1 text-xl"
+            value={password}
+            onChangeText={setPassword}
           />
           <Pressable onPress={() => setShowPassword(!showPassword)}>
             {showPassword ? (
@@ -66,8 +100,20 @@ export default function Register() {
           </Pressable>
         </View>
 
-        <TouchableOpacity className="bg-cyan-500 p-5 rounded-full">
-          <Text className="text-white text-center text-2xl">Register</Text>
+        {error ? (
+          <Text className="text-red-500 text-center">{error}</Text>
+        ) : null}
+
+        <TouchableOpacity
+          className="bg-cyan-500 p-5 rounded-full flex-row items-center justify-center"
+          onPress={handleRegister}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-white text-center text-2xl">Register</Text>
+          )}
         </TouchableOpacity>
 
         <View className="flex-row items-center gap-2 justify-center">
