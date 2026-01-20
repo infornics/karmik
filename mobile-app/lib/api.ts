@@ -72,3 +72,67 @@ export async function loginUser(payload: { email: string; password: string }) {
     throw new Error("Login failed");
   }
 }
+
+export async function addKarmaEntry(type: "good" | "bad", token: string) {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  try {
+    const response = await api.post(
+      "/auth/karma",
+      { type },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      const message =
+        (error.response?.data as any)?.message ??
+        error.message ??
+        "Unable to add karma entry";
+      throw new Error(message);
+    }
+
+    throw new Error("Unable to add karma entry");
+  }
+}
+
+export async function fetchKarmaHistory(token: string) {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
+
+  try {
+    const response = await api.get("/auth/karma", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data as {
+      history: Array<{
+        id: string;
+        type: "good" | "bad";
+        points: number;
+        createdAt: string;
+      }>;
+      today: { good: number; bad: number; points: number };
+    };
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      const message =
+        (error.response?.data as any)?.message ??
+        error.message ??
+        "Unable to fetch karma history";
+      throw new Error(message);
+    }
+
+    throw new Error("Unable to fetch karma history");
+  }
+}
