@@ -8,9 +8,12 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node build/index.js",
-    "build": "npm i && tsc"
+    "build": "npm i && tsc",
+    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/body-parser": "^1.19.6",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
@@ -26,6 +29,7 @@
   },
   "dependencies": {
     "@types/morgan": "^1.9.10",
+    "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
